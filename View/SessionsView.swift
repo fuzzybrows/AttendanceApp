@@ -26,6 +26,25 @@ struct SessionsView: View {
             .onAppear {
                 viewModel.fetchSessions()
             }
+            .overlay {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else if let error = viewModel.errorMessage {
+                    VStack {
+                        Text("Error loading sessions")
+                            .font(.headline)
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Button("Retry") {
+                            viewModel.fetchSessions()
+                        }
+                        .padding(.top)
+                    }
+                } else if viewModel.filteredSessions.isEmpty {
+                    ContentUnavailableView("No Sessions", systemImage: "list.bullet.rectangle.portrait", description: Text("Try adjusting your search or create a new session."))
+                }
+            }
             .refreshable {
                 viewModel.fetchSessions()
             }

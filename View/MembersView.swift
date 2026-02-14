@@ -21,6 +21,25 @@ struct MembersView: View {
             .onAppear {
                 viewModel.fetchMembers()
             }
+            .overlay {
+                if viewModel.isLoading {
+                    ProgressView()
+                } else if let error = viewModel.errorMessage {
+                    VStack {
+                        Text("Error loading members")
+                            .font(.headline)
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Button("Retry") {
+                            viewModel.fetchMembers()
+                        }
+                        .padding(.top)
+                    }
+                } else if viewModel.filteredMembers.isEmpty {
+                    ContentUnavailableView("No Members", systemImage: "person.2.slash", description: Text("Try adjusting your search."))
+                }
+            }
             .refreshable {
                 viewModel.fetchMembers()
             }
